@@ -9,7 +9,7 @@ const Form = () => {
   const [maintask, setmaintask] = useState([]);
 
   const getpasswords = async()=>{
-    let req = await fetch("http://localhost:3000/");
+    let req = await fetch("https://pmanager-backend.onrender.com");
     let passwords = await req.json();
     setmaintask(passwords)
   }
@@ -23,7 +23,7 @@ const Form = () => {
   const handleSubmit = async(e) => {
     e.preventDefault();
     if(form.id){
-      await fetch("http://localhost:3000/",{
+      await fetch("https://pmanager-backend.onrender.com",{
       method:"PUT",headers:{"Content-Type":"application/json"},
       body:JSON.stringify(form)
     });
@@ -46,7 +46,7 @@ const Form = () => {
       password:form.password,
     };
 
-    await fetch("http://localhost:3000/",{
+    await fetch("https://pmanager-backend.onrender.com",{
       method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify(newData)
     });
@@ -65,7 +65,7 @@ const Form = () => {
     // setmaintask(deltask);
     // localStorage.setItem("maintask", JSON.stringify(deltask));
     confirm("If You Deleted This Task!")
-    await fetch("http://localhost:3000/",{
+    await fetch("https://pmanager-backend.onrender.com",{
       method:"DELETE",headers:{"Content-Type":"application/json"},
       body:JSON.stringify({id:item.id})
     })
