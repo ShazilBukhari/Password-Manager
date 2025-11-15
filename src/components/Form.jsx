@@ -1,10 +1,12 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { v4 as uuidv4 } from 'uuid';
 import { useState } from "react";
 
 const Form = () => {
+  const ref=useRef();
+  const passref = useRef();
   const [form, setform] = useState({ site: "", sitename: "", password: "" });
   const [maintask, setmaintask] = useState([]);
 
@@ -18,7 +20,15 @@ const Form = () => {
     getpasswords()
   }, []);
 
-  
+  const showpassword=()=>{
+   if(ref.current.src.includes("icons/closeeye.png")){
+    ref.current.src="icons/openeye.png";
+    passref.current.type="password";
+   }else{
+    ref.current.src="icons/closeeye.png";
+    passref.current.type="text";
+   }
+  }
 
   const handleSubmit = async(e) => {
     e.preventDefault();
@@ -93,6 +103,7 @@ const Form = () => {
     
     // setmaintask(updatedtask)
     // localStorage.setItem("maintask", JSON.stringify(updatedtask));
+    //delete,same name already exist, sign up and signin form 
   }
 
   const copytask = (copy) => {
@@ -159,7 +170,19 @@ const Form = () => {
             onChange={(e) => {
               setform({ ...form, [e.target.name]: e.target.value });
             }}
+            ref={passref}
           />
+          <span
+                className="absolute right-0 cursor-pointer"
+                onClick={showpassword}
+              >
+                <img
+                  ref={ref}
+                  src="icons/openeye.png"
+                  alt="openeye"
+                  className="h-5 px-2 mt-2 "
+                />
+              </span>
         </div>
         <div className="flex justify-center mt-4 items-center">
           <div className="bg-green-500 w-24 p-3 flex justify-center items-center rounded-md text-white font-bold hover:bg-green-400">
@@ -233,7 +256,7 @@ const Form = () => {
                   </button>
                 </td>
                 <td className="border text-center p-2">
-                  {item.password}
+                  {"*".repeat(item.password.length)}
                   <button
                     onClick={() => {
                       copytask(item.password);
