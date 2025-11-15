@@ -173,14 +173,14 @@ const Form = () => {
             ref={passref}
           />
           <span
-                className="absolute right-0 cursor-pointer"
+                className="cursor-pointer flex justify-center items-center"
                 onClick={showpassword}
               >
                 <img
                   ref={ref}
                   src="icons/openeye.png"
                   alt="openeye"
-                  className="h-5 px-2 mt-2 "
+                  className="h-7 px-2"
                 />
               </span>
         </div>
