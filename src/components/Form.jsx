@@ -60,7 +60,6 @@ const Form = () => {
       method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify(newData)
     });
-
   }
     // setmaintask([...maintask, form]);
     // localStorage.setItem("maintask", JSON.stringify([...maintask, form]));
@@ -162,17 +161,16 @@ const Form = () => {
             }}
           />
           <input
-            type="password"
-            name="password"
-            id="password"
-            placeholder=" Enter The Password"
-            className="border border-gray-950 rounded-md p-2  w-3/12"
-            value={form.password}
-            onChange={(e) => {
-              setform({ ...form, [e.target.name]: e.target.value });
-            }}
-            ref={passref}
-          />
+  type="password"
+  name="password"
+  id="password"
+  placeholder=" Enter The Password"
+  className="border border-gray-950 rounded-md p-2  w-3/12"
+  value={form.password}
+  onChange={(e) => setform({ ...form, [e.target.name]: e.target.value })}
+  ref={passref}
+  autoComplete="current-password"
+/>
           <span
                 className="cursor-pointer flex justify-center items-center"
                 onClick={showpassword}
