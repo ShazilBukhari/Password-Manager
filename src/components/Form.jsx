@@ -60,6 +60,9 @@ const Form = () => {
       method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify(newData)
     });
+
+  return; // stop
+}
   }
     // setmaintask([...maintask, form]);
     // localStorage.setItem("maintask", JSON.stringify([...maintask, form]));
@@ -161,16 +164,17 @@ const Form = () => {
             }}
           />
           <input
-  type="password"
-  name="password"
-  id="password"
-  placeholder=" Enter The Password"
-  className="border border-gray-950 rounded-md p-2  w-3/12"
-  value={form.password}
-  onChange={(e) => setform({ ...form, [e.target.name]: e.target.value })}
-  ref={passref}
-  autoComplete="current-password"
-/>
+            type="password"
+            name="password"
+            id="password"
+            placeholder=" Enter The Password"
+            className="border border-gray-950 rounded-md p-2  w-3/12"
+            value={form.password}
+            onChange={(e) => {
+              setform({ ...form, [e.target.name]: e.target.value });
+            }}
+            ref={passref}
+          />
           <span
                 className="cursor-pointer flex justify-center items-center"
                 onClick={showpassword}
@@ -185,7 +189,7 @@ const Form = () => {
         </div>
         <div className="flex justify-center mt-4 items-center">
           <div className="bg-green-500 w-24 p-3 flex justify-center items-center rounded-md text-white font-bold hover:bg-green-400">
-            <button type = "submit" className="flex justify-center items-center ">
+            <button className="flex justify-center items-center ">
               <lord-icon
                 src="https://cdn.lordicon.com/vjgknpfx.json"
                 trigger="hover"
