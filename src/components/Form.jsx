@@ -56,12 +56,12 @@ const Form = () => {
       password:form.password,
     };
 
-    let req = await fetch("https://pmanager-backend.onrender.com",{
+    let request = await fetch("https://pmanager-backend.onrender.com",{
       method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify(newData)
     });
 
-    const res = await req.json();
+    const res = await request.json();
 
 // ---- IMPORTANT PART ----
 if(!res.success){
