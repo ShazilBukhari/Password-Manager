@@ -32,6 +32,23 @@ const Form = () => {
 
   const handleSubmit = async(e) => {
     e.preventDefault();
+    // Duplicate sitename check
+const isDuplicate = maintask.some(
+  (item) =>
+    item.sitename.toLowerCase() === form.sitename.toLowerCase() &&
+    item.id !== form.id // Editing wale case me allowed
+);
+
+if (isDuplicate) {
+  toast("Sitename already exists!", {
+    position: "top-right",
+    autoClose: 1500,
+    theme: "dark",
+    type: "error",
+  });
+  return; // Stop submit
+}
+
     if(form.id){
       await fetch("https://pmanager-backend.onrender.com",{
       method:"PUT",headers:{"Content-Type":"application/json"},
