@@ -61,8 +61,6 @@ const Form = () => {
       body:JSON.stringify(newData)
     });
 
-  return; // stop
-
   }
     // setmaintask([...maintask, form]);
     // localStorage.setItem("maintask", JSON.stringify([...maintask, form]));
