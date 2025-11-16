@@ -56,22 +56,11 @@ const Form = () => {
       password:form.password,
     };
 
-    let request = await fetch("https://pmanager-backend.onrender.com",{
+    await fetch("https://pmanager-backend.onrender.com",{
       method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify(newData)
     });
 
-    const res = await request.json();
-
-// ---- IMPORTANT PART ----
-if(!res.success){
-  toast.error("Sitename Already Exists!", {
-    position: "top-right",
-    autoClose: 1500,
-    theme: "dark",
-  });
-  return; // stop
-}
   }
     // setmaintask([...maintask, form]);
     // localStorage.setItem("maintask", JSON.stringify([...maintask, form]));
