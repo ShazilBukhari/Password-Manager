@@ -185,7 +185,7 @@ const Form = () => {
         </div>
         <div className="flex justify-center mt-4 items-center">
           <div className="bg-green-500 w-24 p-3 flex justify-center items-center rounded-md text-white font-bold hover:bg-green-400">
-            <button className="flex justify-center items-center ">
+            <button type = "submit" className="flex justify-center items-center ">
               <lord-icon
                 src="https://cdn.lordicon.com/vjgknpfx.json"
                 trigger="hover"
