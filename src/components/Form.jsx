@@ -1,318 +1,228 @@
 "use client";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import { v4 as uuidv4 } from 'uuid';
-import { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 const Form = () => {
-  const ref=useRef();
+  const ref = useRef();
   const passref = useRef();
+
   const [form, setform] = useState({ site: "", sitename: "", password: "" });
   const [maintask, setmaintask] = useState([]);
 
-  const getpasswords = async()=>{
+  const getpasswords = async () => {
     let req = await fetch("https://pmanager-backend.onrender.com");
     let passwords = await req.json();
-    setmaintask(passwords)
-  }
+    setmaintask(passwords);
+  };
 
   useEffect(() => {
-    getpasswords()
+    getpasswords();
   }, []);
 
-  const showpassword=()=>{
-   if(ref.current.src.includes("icons/closeeye.png")){
-    ref.current.src="icons/openeye.png";
-    passref.current.type="password";
-   }else{
-    ref.current.src="icons/closeeye.png";
-    passref.current.type="text";
-   }
-  }
+  const showpassword = () => {
+    if (ref.current.src.includes("closeeye")) {
+      ref.current.src = "icons/openeye.png";
+      passref.current.type = "password";
+    } else {
+      ref.current.src = "icons/closeeye.png";
+      passref.current.type = "text";
+    }
+  };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Duplicate sitename check
-const isDuplicate = maintask.some(
-  (item) =>
-    item.sitename.toLowerCase() === form.sitename.toLowerCase() &&
-    item.id !== form.id // Editing wale case me allowed
-);
 
-if (isDuplicate) {
-  toast("Sitename already exists!", {
-    position: "top-right",
-    autoClose: 1500,
-    theme: "dark",
-    type: "error",
-  });
-  return; // Stop submit
-}
+    const isDuplicate = maintask.some(
+      (item) =>
+        item.sitename.toLowerCase() === form.sitename.toLowerCase() &&
+        item.id !== form.id
+    );
 
-    if(form.id){
-      await fetch("https://pmanager-backend.onrender.com",{
-      method:"PUT",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(form)
-    });
-    toast("Edited!", {
-      position: "top-right",
-      autoClose: 1000,
-      hideProgressBar: false,
-      closeOnClick: false,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      type:"success",
-      theme: "dark",
-    });
-    }else{
-    const newData={
-      id:uuidv4(),
-      site:form.site,
-      sitename:form.sitename,
-      password:form.password,
-    };
+    if (isDuplicate) {
+      toast("Sitename already exists!", {
+        position: "top-right",
+        autoClose: 1500,
+        theme: "dark",
+        type: "error",
+      });
+      return;
+    }
 
-    await fetch("https://pmanager-backend.onrender.com",{
-      method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(newData)
-    });
+    if (form.id) {
+      await fetch("https://pmanager-backend.onrender.com", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      toast("Edited!", { theme: "dark", type: "success" });
+    } else {
+      await fetch("https://pmanager-backend.onrender.com", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, id: uuidv4() }),
+      });
+    }
 
-  }
-    // setmaintask([...maintask, form]);
-    // localStorage.setItem("maintask", JSON.stringify([...maintask, form]));
     setform({ site: "", sitename: "", password: "" });
     getpasswords();
-    console.log([...maintask, form]);
   };
-  
-  const handledel = async(item) => {
-    console.log("Delete is Working");
-    let deltask = [...maintask];
-    deltask.splice(item, 1);
-    // setmaintask(deltask);
-    // localStorage.setItem("maintask", JSON.stringify(deltask));
-    confirm("If You Deleted This Task!")
-    await fetch("https://pmanager-backend.onrender.com",{
-      method:"DELETE",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({id:item.id})
-    })
-    getpasswords();
-    toast("Task Deleted Successfully!", {
-      position: "top-right",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: false,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-      type:"error"
+
+  const handledel = async (item) => {
+    if (!confirm("Delete this task?")) return;
+
+    await fetch("https://pmanager-backend.onrender.com", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: item.id }),
     });
+
+    toast("Task Deleted!", { theme: "dark", type: "error" });
+    getpasswords();
   };
 
-  const editask=(i)=>{
-    console.log("Edit is working");
-    const tasktoedit = maintask[i];
-    setform(tasktoedit);
+  const editask = (i) => setform(maintask[i]);
 
-    const updatedtask=[...maintask];
-    updatedtask.splice(i,1);
-    
-    // setmaintask(updatedtask)
-    // localStorage.setItem("maintask", JSON.stringify(updatedtask));
-    //delete,same name already exist, sign up and signin form 
-  }
-
-  const copytask = (copy) => {
-    navigator.clipboard.writeText(copy);
-    toast("Copy to Clipboard!", {
+  const copytask = (text) => {
+    navigator.clipboard.writeText(text);
+    toast("Copied!", {
       position: "top-right",
       autoClose: 1000,
-      hideProgressBar: false,
-      closeOnClick: false,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      type:"success",
       theme: "dark",
+      type: "success",
     });
   };
+
   return (
     <>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick={false}
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
-      <form onSubmit={handleSubmit}>
-        <div className="flex flex-col justify-center items-center">
-          <input
-            type="url"
-            name="site"
-            id="site"
-            placeholder=" Enter Your Url"
-            className="border border-gray-950 rounded-md p-2 w-11/12 mt-5"
-            value={form.site}
-            onChange={(e) => {
-              setform({ ...form, [e.target.name]: e.target.value });
-            }}
-          />
-        </div>
-        <div className="flex justify-center gap-3 mt-3">
+      <ToastContainer />
+
+      {/* FORM */}
+      <form onSubmit={handleSubmit} className="px-3">
+        <input
+          type="url"
+          placeholder="Enter URL"
+          className="border rounded p-2 w-full mt-4"
+          value={form.site}
+          onChange={(e) => setform({ ...form, site: e.target.value })}
+        />
+
+        <div className="flex flex-col sm:flex-row gap-3 mt-3 items-center">
           <input
             type="text"
-            name="sitename"
-            id="sitename"
-            placeholder=" Enter The Unique Name"
-            className="border border-gray-950 rounded-md p-2  w-3/12"
+            placeholder="Site Name"
+            className="border rounded p-2 w-full sm:w-1/4"
             value={form.sitename}
-            onChange={(e) => {
-              setform({ ...form, [e.target.name]: e.target.value });
-            }}
+            onChange={(e) =>
+              setform({ ...form, sitename: e.target.value })
+            }
           />
+
           <input
             type="password"
-            name="password"
-            id="password"
-            placeholder=" Enter The Password"
-            className="border border-gray-950 rounded-md p-2  w-3/12"
-            value={form.password}
-            onChange={(e) => {
-              setform({ ...form, [e.target.name]: e.target.value });
-            }}
+            placeholder="Password"
             ref={passref}
+            className="border rounded p-2 w-full sm:w-1/4"
+            value={form.password}
+            onChange={(e) =>
+              setform({ ...form, password: e.target.value })
+            }
           />
-          <span
-                className="cursor-pointer flex justify-center items-center"
-                onClick={showpassword}
-              >
-                <img
-                  ref={ref}
-                  src="icons/openeye.png"
-                  alt="openeye"
-                  className="h-7 px-2"
-                />
-              </span>
+
+          <span onClick={showpassword} className="cursor-pointer">
+            <img ref={ref} src="icons/openeye.png" className="h-7" />
+          </span>
         </div>
-        <div className="flex justify-center mt-4 items-center">
-          <div className="bg-green-500 w-24 p-3 flex justify-center items-center rounded-md text-white font-bold hover:bg-green-400">
-            <button className="flex justify-center items-center ">
-              <lord-icon
-                src="https://cdn.lordicon.com/vjgknpfx.json"
-                trigger="hover"
-                stroke="bold"
-                colors="primary:#000000,secondary:#000000"
-                style={{ width: "30px", height: "30px" }}
-              ></lord-icon>
-              Save
-            </button>
-          </div>
+
+        <div className="flex justify-center mt-4">
+          <button className="bg-green-500 text-white px-6 py-2 rounded font-bold">
+            <lord-icon
+              src="https://cdn.lordicon.com/vjgknpfx.json"
+              trigger="hover"
+              style={{ width: "25px", height: "25px" }}
+            ></lord-icon>
+            Save
+          </button>
         </div>
       </form>
 
-      <div className="mt-3 flex justify-center items-center">
-        <table className="border">
-          <thead className="border">
+      {/* 📱 MOBILE CARD VIEW */}
+      <div className="sm:hidden mt-5 space-y-3 px-3">
+        {maintask.map((item, i) => (
+          <div key={i} className="border rounded p-3 shadow">
+            <p className="break-all">
+              <b>Site:</b> {item.site}
+            </p>
+            <p>
+              <b>Name:</b> {item.sitename}
+            </p>
+            <p>
+              <b>Password:</b> {"*".repeat(item.password.length)}
+            </p>
+
+            <div className="flex gap-3 mt-2">
+              <button onClick={() => copytask(item.password)}>
+                <lord-icon
+                  src="https://cdn.lordicon.com/ysqeagpz.json"
+                  trigger="hover"
+                  style={{ width: "22px", height: "22px" }}
+                ></lord-icon>
+              </button>
+
+              <button onClick={() => editask(i)}>
+                <lord-icon
+                  src="https://cdn.lordicon.com/fikcyfpp.json"
+                  trigger="hover"
+                  style={{ width: "22px", height: "22px" }}
+                ></lord-icon>
+              </button>
+
+              <button onClick={() => handledel(item)}>
+                <lord-icon
+                  src="https://cdn.lordicon.com/jzinekkv.json"
+                  trigger="hover"
+                  style={{ width: "22px", height: "22px" }}
+                ></lord-icon>
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* 💻 DESKTOP TABLE */}
+      <div className="hidden sm:block mt-5 overflow-x-auto px-3">
+        <table className="border w-full min-w-[700px]">
+          <thead>
             <tr>
-              <th className="border p-2 w-60 font-semibold">Site Url</th>
-              <th className="border p-2 w-60 font-semibold">Site Name</th>
-              <th className="border p-2 w-60 font-semibold">Password</th>
-              <th className="border p-2 w-60 font-semibold">Action</th>
+              <th className="border p-2">Site</th>
+              <th className="border p-2">Name</th>
+              <th className="border p-2">Password</th>
+              <th className="border p-2">Action</th>
             </tr>
           </thead>
           <tbody>
-            {maintask.map((item, index) => (
-              <tr key={index}>
-                <td className="border text-center p-2">
-                  <a href={item.site} target="_blank">
-                    {item.site}
-                  </a>
-                  <button
-                    onClick={() => {
-                      copytask(item.site);
-                    }}
-                  >
-                    <lord-icon
-                      src="https://cdn.lordicon.com/ysqeagpz.json"
-                      trigger="hover"
-                      stroke="bold"
-                      colors="primary:#000000,secondary:#000000"
-                      style={{
-                        width: "20px",
-                        height: "20px",
-                        cursor: "pointer",
-                      }}
-                    ></lord-icon>
-                  </button>
-                </td>
-                <td className="border text-center p-2">
-                  {item.sitename}
-                  <button
-                    onClick={() => {
-                      copytask(item.sitename);
-                    }}
-                  >
-                    <lord-icon
-                      src="https://cdn.lordicon.com/ysqeagpz.json"
-                      trigger="hover"
-                      stroke="bold"
-                      colors="primary:#000000,secondary:#000000"
-                      style={{
-                        width: "20px",
-                        height: "20px",
-                        cursor: "pointer",
-                      }}
-                    ></lord-icon>
-                  </button>
-                </td>
-                <td className="border text-center p-2">
+            {maintask.map((item, i) => (
+              <tr key={i}>
+                <td className="border p-2 break-all">{item.site}</td>
+                <td className="border p-2">{item.sitename}</td>
+                <td className="border p-2">
                   {"*".repeat(item.password.length)}
-                  <button
-                    onClick={() => {
-                      copytask(item.password);
-                    }}
-                  >
+                </td>
+                <td className="border p-2 flex gap-2 justify-center">
+                  <button onClick={() => editask(i)}>
                     <lord-icon
-                      src="https://cdn.lordicon.com/ysqeagpz.json"
+                      src="https://cdn.lordicon.com/fikcyfpp.json"
                       trigger="hover"
-                      stroke="bold"
-                      colors="primary:#000000,secondary:#000000"
-                      style={{
-                        width: "20px",
-                        height: "20px",
-                        cursor: "pointer",
-                      }}
+                      style={{ width: "25px", height: "25px" }}
                     ></lord-icon>
                   </button>
-                </td>
-                <td className="border text-center p-2">
+
                   <button onClick={() => handledel(item)}>
                     <lord-icon
                       src="https://cdn.lordicon.com/jzinekkv.json"
                       trigger="hover"
-                      stroke="bold"
-                      colors="primary:#000000,secondary:#000000"
-                      style={{ width: "30px", height: "30px" }}
+                      style={{ width: "25px", height: "25px" }}
                     ></lord-icon>
-                  </button>
-                  <button onClick={()=>{
-                    editask(index)
-                  }}>
-                    <lord-icon
-    src="https://cdn.lordicon.com/fikcyfpp.json"
-    trigger="hover"
-    stroke="bold"
-    colors="primary:#000000,secondary:#000000"
-    style={{ width: "30px", height: "30px" }}>
-</lord-icon>
                   </button>
                 </td>
               </tr>
